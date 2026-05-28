@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kevin Mitnick | Cyber Vault - Immersive Landscape Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0b0b0f;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', 'Poppins', sans-serif;
+            overflow-x: hidden;
+            color: #fff;
+        }
+
+        /* ========== DYNAMIC CYBER BACKGROUND ========== */
+        .cyber-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(circle at 20% 30%, #0a0a0f, #000000);
+        }
+
+        .glow-orb {
+            position: fixed;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(255,0,100,0.25), transparent 70%);
+            top: -30vw;
+            right: -20vw;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
+            animation: floatGlow 18s infinite alternate;
+        }
+
+        .glow-orb-2 {
+            left: -20vw;
+            bottom: -30vw;
+            background: radial-gradient(circle, rgba(0,200,255,0.2), transparent 70%);
+            animation: floatGlow2 22s infinite alternate;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translate(0,0) scale(1); opacity: 0.6; }
+            100% { transform: translate(5%, 5%) scale(1.2); opacity: 0.9; }
+        }
+        @keyframes floatGlow2 {
+            0% { transform: translate(0,0) scale(1); opacity: 0.4; }
+            100% { transform: translate(-3%, -5%) scale(1.3); opacity: 0.8; }
+        }
+
+        /* ========== LANDSCAPE MAIN LAYOUT (TIKTOK IMMERSIVE) ========== */
+        .landscape-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Main split screen: left = profile & info, right = video showcase */
+        .player-dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            background: rgba(10, 10, 15, 0.55);
+            backdrop-filter: blur(16px);
+            border-radius: 3rem;
+            border: 1px solid rgba(255, 45, 85, 0.3);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+            padding: 1.8rem;
+            transition: all 0.3s;
+        }
+
+        /* LEFT PANEL — enhanced profile card */
+        .profile-panel {
+            flex: 1.2;
+            min-width: 280px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 2rem;
+            backdrop-filter: blur(4px);
+            padding: 1.8rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .profile-header-enhanced {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 1.5rem;
+        }
+
+        .profile-pic-main {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ff2d55;
+            box-shadow: 0 0 25px #ff2d55;
+            transition: 0.2s;
+        }
+
+        .stats-enhanced {
+            display: flex;
+            gap: 1.8rem;
+            text-align: center;
+        }
+
+        .stat-block .stat-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #ffb3c6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .stat-block .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #aaa;
+        }
+
+        .bio-enhanced {
+            margin: 1.5rem 0;
+        }
+
+        .username-glitch {
+            font-size: 1.6rem;
+            font-weight: 800;
+            display: inline-block;
+            background: linear-gradient(120deg, #ff2d55, #ff9a3c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .bio-text {
+            color: #ccc;
+            line-height: 1.4;
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-cyber {
+            flex: 1;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            border: none;
+            background: linear-gradient(95deg, #ff2d55, #c50038);
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-outline-cyber {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,45,85,0.6);
+            color: white;
+        }
+
+        /* RIGHT PANEL: LANDSCAPE VIDEO HERO */
+        .video-panel {
+            flex: 2.2;
+            min-width: 340px;
+        }
+
+        .hero-video-card {
+            background: #000;
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.6);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255,45,85,0.4);
+        }
+
+        .video-landscape-wrapper {
+            position: relative;
+            background: #0a0a0a;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+        }
+
+        #landscapeVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .video-overlay-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.7), transparent);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .hero-video-card:hover .video-overlay-controls {
+            opacity: 1;
+        }
+
+        .action-icons-landscape {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .icon-circle {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .icon-circle:hover {
+            transform: scale(1.1);
+            background: #ff2d55;
+        }
+
+        .video-info-landscape {
+            padding: 1rem;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .video-title-land {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .video-stats-land {
+            display: flex;
+            gap: 1rem;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #bbb;
+        }
+
+        /* VIDEO GRID — horizontal scroll preview (TikTok style) */
+        .preview-section {
+            margin-top: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1rem;
+        }
+
+        .grid-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            padding-bottom: 0.8rem;
+        }
+
+        .grid-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .mini-vid-card {
+            min-width: 150px;
+            flex-shrink: 0;
+            background: #111;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .mini-thumb {
+            aspect-ratio: 9 / 16;
+            background: linear-gradient(145deg, #2a2a2a, #000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+        }
+
+        .mini-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+
+        /* ========== FULLSCREEN MODAL (IMMERSIVE LANDSCAPE TIKTOK) ========== */
+        .immersive-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .immersive-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-landscape-wrapper {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-video-area {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+
+        #fullVideoPlayer {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            max-height: 85vh;
+        }
+
+        .modal-info-bar {
+            background: linear-gradient(0deg, #000000, #0f0f13);
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255,45,85,0.4);
+        }
+
+        .modal-meta {
+            display: flex;
+            gap: 1.2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 2rem;
+            margin-top: 0.8rem;
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            background: rgba(0,0,0,0.7);
+            width: 44px;
+            height: 44px;
+            border-radius: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff2d55;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            z-index: 20001;
+            opacity: 0;
+            transition: 0.2s;
+            pointer-events: none;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 880px) {
+            .player-dashboard { flex-direction: column; }
+            .profile-panel { text-align: center; }
+            .profile-header-enhanced { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="cyber-bg"></div>
+<div class="glow-orb"></div>
+<div class="glow-orb glow-orb-2"></div>
+
+<div class="landscape-container">
+    <div class="player-dashboard">
+        <!-- LEFT: NEXT-GEN PROFILE -->
+        <div class="profile-panel">
+            <div class="profile-header-enhanced">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Kevin_Mitnick.jpg/800px-Kevin_Mitnick.jpg" class="profile-pic-main" onerror="this.src='https://randomuser.me/api/portraits/men/32.jpg'">
+                <div class="stats-enhanced">
+                    <div class="stat-block"><div class="stat-val" id="followerVal">1.2M</div><div class="stat-label">Followers</div></div>
+                    <div class="stat-block"><div class="stat-val" id="totalLikesVal">28.5M</div><div class="stat-label">Likes</div></div>
+                    <div class="stat-block"><div class="stat-val">47</div><div class="stat-label">Following</div></div>
+                </div>
+            </div>
+            <div class="bio-enhanced">
+                <div class="username-glitch">@KevinMitnick</div>
+                <div class="bio-text">🕶️ Legendary Hacker | "The Art of Deception"<br>⚡ Social Engineering Master | 1963-2023</div>
+                <div class="action-group">
+                    <button class="btn-cyber" id="globalFollowBtn">+ Follow</button>
+                    <button class="btn-cyber btn-outline-cyber" id="globalMsgBtn">💬 Message</button>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.7rem; color:#ff5e7e;">✨ 8.2M views this month</div>
+        </div>
+
+        <!-- RIGHT: LANDSCAPE VIDEO HUB (TIKTOK STYLE) -->
+        <div class="video-panel">
+            <div class="hero-video-card">
+                <div class="video-landscape-wrapper">
+                    <video id="landscapeVideo" autoplay muted loop playsinline poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23333'%3E%3Crect width='100%25' height='100%25'/%3E%3C/svg%3E">
+                        <source src="" type="video/mp4">
+                    </video>
+                    <div class="video-overlay-controls">
+                        <div class="action-icons-landscape">
+                            <div class="icon-circle" id="landLikeBtn">❤️</div>
+                            <div class="icon-circle" id="landCommentBtn">💬</div>
+                            <div class="icon-circle" id="landShareBtn">📤</div>
+                            <div class="icon-circle" id="landFullscreenBtn">⛶</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-info-landscape">
+                    <div class="video-title-land" id="landVideoTitle">How I hacked the FBI at 17 🔥</div>
+                    <div class="video-stats-land">
+                        <span id="landLikeStat">❤️ 2.3M</span>
+                        <span id="landCommentStat">💬 12.4K</span>
+                        <span>🎵 Original - Kevin Mitnick</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PREVIEW REEL: SCROLLABLE GRID -->
+            <div class="preview-section">
+                <div class="section-header"><span>📱 LATEST HACKS & STORIES</span><span style="font-size:0.7rem;">↝ scroll →</span></div>
+                <div class="grid-scroll" id="scrollGrid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FULL IMMERSIVE MODAL (TikTok Landscape) -->
+<div class="immersive-modal" id="fullscreenModal">
+    <div class="modal-landscape-wrapper">
+        <div class="close-modal-btn" id="closeFullModal">✕</div>
+        <div class="modal-video-area">
+            <video id="fullVideoPlayer" controls autoplay loop playsinline></video>
+        </div>
+        <div class="modal-info-bar">
+            <div class="modal-meta">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Kevin_Mitnick.jpg/800px-Kevin_Mitnick.jpg" style="width:42px;height:42px;border-radius:50%;border:2px solid #ff2d55;">
+                <div><strong>Kevin Mitnick</strong> <span style="color:#aaa;">@KevinMitnick · Hacker Legend</span></div>
+            </div>
+            <div class="modal-caption-text" id="modalFullCaption" style="margin:8px 0;">How I hacked the FBI at 17 🔥</div>
+            <div class="modal-buttons">
+                <div class="icon-circle" id="modalFullLike">❤️ <span id="modalFullLikeCount">2.3M</span></div>
+                <div class="icon-circle" id="modalFullCommentBtn">💬 <span id="modalFullCommentCount">12.4K</span></div>
+                <div class="icon-circle" id="modalFullShare">📤 Share</div>
+                <div class="icon-circle" id="modalFullSave">⭐ Save</div>
+            </div>
+            <div style="margin-top:12px;"><input type="text" id="fullCommentInput" placeholder="Add a comment..." style="background:#1e1e2a;border:none;padding:8px 16px;border-radius:40px;width:70%;color:white;"><button id="fullPostComment" style="background:#ff2d55;border:none;border-radius:40px;padding:8px 20px;margin-left:8px;">Post</button></div>
+            <div id="fullCommentsList" style="max-height:110px;overflow-y:auto;margin-top:12px;font-size:0.75rem;"></div>
+        </div>
+    </div>
+</div>
+
+<div id="globalToast" class="toast-msg"></div>
+
+<script>
+    // ======================= VIDEO DATABASE =======================
+    const videoLibrary = [
+        { id: 1, title: "How I hacked the FBI at 17 🔥", likes: 2300000, comments: 12400, file: "video1.mp4", views: "8.2M" },
+        { id: 2, title: "Social engineering 101 - Hacking humans", likes: 1800000, comments: 9200, file: "video2.mp4", views: "6.1M" },
+        { id: 3, title: "5 years in prison: my story", likes: 3100000, comments: 18000, file: "video3.mp4", views: "9.7M" },
+        { id: 4, title: "Keynote: Future of cybersecurity", likes: 987000, comments: 5100, file: "video4.mp4", views: "3.4M" },
+        { id: 5, title: "The Art of Deception - my book", likes: 1200000, comments: 7800, file: "video5.mp4", views: "2.9M" },
+        { id: 6, title: "Top 5 passwords to avoid", likes: 2500000, comments: 15000, file: "video6.mp4", views: "7.8M" }
+    ];
+
+    // State management
+    let currentMainVideo = videoLibrary[0];
+    let likesMap = {};
+    let commentsMap = {};
+    let followStatus = false;
+    let globalFollowers = 1200000;
+    let globalTotalLikes = 28500000;
+
+    function formatNumber(num) {
+        if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+        if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+        return num.toString();
+    }
+
+    function showToastMessage(msg) {
+        const toast = document.getElementById('globalToast');
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        setTimeout(() => toast.style.opacity = '0', 1900);
+    }
+
+    // init states
+    videoLibrary.forEach(vid => {
+        if (likesMap[vid.id] === undefined) likesMap[vid.id] = { liked: false, likes: vid.likes };
+        if (commentsMap[vid.id] === undefined) commentsMap[vid.id] = [
+            { user: "@cyberwiz", text: "GOAT of social engineering!" },
+            { user: "@security_nerd", text: "Kevin is irreplaceable." },
+            { user: "@hackermuse", text: "Legend never dies 🙌" }
+        ];
+    });
+
+    // Update hero panel
+    function updateHeroPanel(video) {
+        const heroVideo = document.getElementById('landscapeVideo');
+        // attempt to load video (must be placed in videos/ folder)
+        heroVideo.src = `videos/${video.file}`;
+        heroVideo.load();
+        heroVideo.play().catch(e => console.log("autoplay muted handled"));
+        document.getElementById('landVideoTitle').innerText = video.title;
+        const likeState = likesMap[video.id];
+        document.getElementById('landLikeStat').innerHTML = `❤️ ${formatNumber(likeState.likes)}`;
+        document.getElementById('landCommentStat').innerHTML = `💬 ${formatNumber(video.comments)}`;
+        // store current
+        currentMainVideo = video;
+    }
+
+    // Render horizontal scroll grid
+    function renderGrid() {
+        const gridContainer = document.getElementById('scrollGrid');
+        gridContainer.innerHTML = '';
+        videoLibrary.forEach(vid => {
+            const likeData = likesMap[vid.id];
+            const card = document.createElement('div');
+            card.className = 'mini-vid-card';
+            card.setAttribute('data-id', vid.id);
+            card.innerHTML = `
+                <div class="mini-thumb">🎬 <span style="position:absolute; font-size:1.5rem;">▶️</span></div>
+                <div class="mini-stats"><span>❤️ ${formatNumber(likeData.likes)}</span><span>💬 ${formatNumber(vid.comments)}</span></div>
+                <div style="padding:0 6px 6px 6px; font-size:0.7rem; font-weight:500;">${vid.title.substring(0,28)}</div>
+            `;
+            card.addEventListener('click', () => {
+                updateHeroPanel(vid);
+                showToastMessage(`Now playing: ${vid.title}`);
+            });
+            gridContainer.appendChild(card);
+        });
+    }
+
+    // Like handler for main player
+    document.getElementById('landLikeBtn').addEventListener('click', () => {
+        const vid = currentMainVideo;
+        const state = likesMap[vid.id];
+        if (!state.liked) {
+            state.liked = true;
+            state.likes += 1;
+            globalTotalLikes += 1;
+            showToastMessage("❤️ Liked this video!");
+        } else {
+            state.liked = false;
+            state.likes -= 1;
+            globalTotalLikes -= 1;
+            showToastMessage("💔 Unliked");
+        }
+        document.getElementById('landLikeStat').innerHTML = `❤️ ${formatNumber(state.likes)}`;
+        document.getElementById('totalLikesVal').innerText = formatNumber(globalTotalLikes);
+        renderGrid(); // refresh grid preview
+    });
+
+    // Share
+    document.getElementById('landShareBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(window.location.href);
+        showToastMessage("📎 Link copied! Share the legacy.");
+    });
+
+    // comment scroll hint
+    document.getElementById('landCommentBtn').addEventListener('click', () => {
+        showToastMessage("💬 Open video modal to comment & interact!");
+        openImmersiveModal(currentMainVideo);
+    });
+
+    // Fullscreen immersive modal
+    function openImmersiveModal(video) {
+        const modal = document.getElementById('fullscreenModal');
+        const fullVideo = document.getElementById('fullVideoPlayer');
+        fullVideo.src = `videos/${video.file}`;
+        fullVideo.load();
+        fullVideo.play().catch(e=>console.log);
+        document.getElementById('modalFullCaption').innerText = video.title;
+        const likeState = likesMap[video.id];
+        document.getElementById('modalFullLikeCount').innerText = formatNumber(likeState.likes);
+        document.getElementById('modalFullCommentCount').innerText = formatNumber(video.comments);
+        if (likeState.liked) {
+            document.getElementById('modalFullLike').style.color = "#ff2d55";
+        } else {
+            document.getElementById('modalFullLike').style.color = "white";
+        }
+        // render comments in modal
+        renderModalComments(video.id);
+        modal.classList.add('active');
+        window.currentModalVideo = video;
+    }
+
+    function renderModalComments(vidId) {
+        const container = document.getElementById('fullCommentsList');
+        const commentsArray = commentsMap[vidId] || [];
+        container.innerHTML = '';
+        commentsArray.slice(0, 5).forEach(c => {
+            const div = document.createElement('div');
+            div.style.marginBottom = '6px';
+            div.style.fontSize = '0.75rem';
+            div.innerHTML = `<strong style="color:#ff5e7e;">${c.user}</strong> <span style="color:#ccc;">${c.text}</span>`;
+            container.appendChild(div);
+        });
+    }
+
+    document.getElementById('modalFullLike').addEventListener('click', () => {
+        if (!window.currentModalVideo) return;
+        const vid = window.currentModalVideo;
+        const state = likesMap[vid.id];
+        if (!state.liked) {
+            state.liked = true;
+            state.likes++;
+            globalTotalLikes++;
+            document.getElementById('modalFullLike').style.color = "#ff2d55";
+        } else {
+            state.liked = false;
+            state.likes--;
+            globalTotalLikes--;
+            document.getElementById('modalFullLike').style.color = "white";
+        }
+        document.getElementById('modalFullLikeCount').innerText = formatNumber(state.likes);
+        document.getElementById('landLikeStat').innerHTML = `❤️ ${formatNumber(state.likes)}`;
+        document.getElementById('totalLikesVal').innerText = formatNumber(globalTotalLikes);
+        renderGrid();
+    });
+
+    document.getElementById('modalFullShare').addEventListener('click', () => {
+        navigator.clipboard.writeText(window.location.href);
+        showToastMessage("📤 Shared Kevin's legacy!");
+    });
+
+    document.getElementById('modalFullSave').addEventListener('click', () => {
+        showToastMessage("⭐ Saved to your collection (demo)");
+    });
+
+    document.getElementById('modalFullCommentBtn').addEventListener('click', () => {
+        document.getElementById('fullCommentInput').focus();
+    });
+
+    document.getElementById('fullPostComment').addEventListener('click', () => {
+        const input = document.getElementById('fullCommentInput');
+        const text = input.value.trim();
+        if (!text) return showToastMessage("Write a comment first!");
+        if (!window.currentModalVideo) return;
+        const vid = window.currentModalVideo;
+        if (!commentsMap[vid.id]) commentsMap[vid.id] = [];
+        commentsMap[vid.id].unshift({ user: "@you", text: text });
+        vid.comments += 1;
+        renderModalComments(vid.id);
+        document.getElementById('modalFullCommentCount').innerText = formatNumber(vid.comments);
+        document.getElementById('landCommentStat').innerHTML = `💬 ${formatNumber(vid.comments)}`;
+        input.value = '';
+        showToastMessage("💬 Comment posted!");
+        renderGrid();
+    });
+
+    document.getElementById('closeFullModal').addEventListener('click', () => {
+        document.getElementById('fullscreenModal').classList.remove('active');
+        document.getElementById('fullVideoPlayer').pause();
+    });
+    document.getElementById('fullscreenModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('fullscreenModal')) {
+            document.getElementById('fullscreenModal').classList.remove('active');
+            document.getElementById('fullVideoPlayer').pause();
+        }
+    });
+    document.getElementById('landFullscreenBtn').addEventListener('click', () => {
+        openImmersiveModal(currentMainVideo);
+    });
+
+    // Follow / Message
+    document.getElementById('globalFollowBtn').addEventListener('click', () => {
+        if (!followStatus) {
+            followStatus = true;
+            globalFollowers++;
+            document.getElementById('globalFollowBtn').innerText = '✓ Following';
+            showToastMessage("✅ Now following Kevin Mitnick");
+        } else {
+            followStatus = false;
+            globalFollowers--;
+            document.getElementById('globalFollowBtn').innerText = '+ Follow';
+            showToastMessage("❌ Unfollowed");
+        }
+        document.getElementById('followerVal').innerText = formatNumber(globalFollowers);
+    });
+    document.getElementById('globalMsgBtn').addEventListener('click', () => {
+        showToastMessage("💬 Message sent to Kevin (demo)");
+    });
+
+    // Auto init first video + set poster for fallback
+    renderGrid();
+    updateHeroPanel(videoLibrary[0]);
+
+    // Set total likes display
+    document.getElementById('totalLikesVal').innerText = formatNumber(globalTotalLikes);
+    document.getElementById('followerVal').innerText = formatNumber(globalFollowers);
+
+    // background particle improvement: smooth dynamic
+    setInterval(() => {
+        const likesTotal = Object.values(likesMap).reduce((sum, s) => sum + s.likes, 0);
+        // just for fun, updates nothing but adds life
+    }, 5000);
+</script>
+</body>
+</html>
