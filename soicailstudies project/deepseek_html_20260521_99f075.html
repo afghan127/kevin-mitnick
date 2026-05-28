@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Kevin Mitnick | TikTok Style Video Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Poppins', 'Arial', sans-serif;
+            min-height: 100vh;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #0a0a0a 0%, #000000 100%);
+            z-index: -2;
+        }
+
+        .bg-gradient::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(125deg, rgba(255,0,80,0.1) 0%, rgba(0,255,255,0.05) 50%, rgba(128,0,255,0.1) 100%);
+            animation: gradientShift 8s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 0, 80, 0.4);
+            border-radius: 50%;
+            animation: floatParticle linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-20vh) translateX(100px); opacity: 0; }
+        }
+
+        /* Main Profile Card */
+        .tiktok-card {
+            max-width: 450px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 0 0 2px rgba(255, 0, 80, 0.3), 0 30px 60px black;
+            transition: all 0.3s;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            padding: 25px 20px 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .profile-pic {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ff0050;
+            box-shadow: 0 0 20px rgba(255,0,80,0.5);
+        }
+
+        .stats {
+            flex: 1;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-weight: 800;
+            font-size: 20px;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* Bio */
+        .bio-section {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .username {
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+        }
+
+        .username span {
+            color: #ff0050;
+        }
+
+        .bio {
+            color: #aaa;
+            font-size: 13px;
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn-follow, .btn-message {
+            flex: 1;
+            padding: 10px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-follow {
+            background: linear-gradient(135deg, #ff0050, #cc0040);
+            color: white;
+        }
+
+        .btn-message {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        /* Video Grid */
+        .videos-section {
+            padding: 20px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .video-card {
+            background: #1a1a1a;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255,0,80,0.3);
+        }
+
+        .video-thumb {
+            width: 100%;
+            aspect-ratio: 9/16;
+            background: linear-gradient(135deg, #2a2a2a, #0a0a0a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            position: relative;
+        }
+
+        .play-icon-small {
+            position: absolute;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .video-title {
+            padding: 8px;
+            font-size: 11px;
+            color: #ddd;
+        }
+
+        .video-stats {
+            padding: 5px 8px 10px;
+            display: flex;
+            justify-content: space-around;
+            font-size: 10px;
+            color: #888;
+        }
+
+        footer {
+            padding: 15px;
+            text-align: center;
+            color: #444;
+            font-size: 10px;
+        }
+
+        /* ========== TIKTOK STYLE MODAL VIDEO PLAYER ========== */
+        .video-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .video-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            width: 100%;
+            height: 100%;
+            max-width: 450px;
+            max-height: 100%;
+            background: #000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Close button */
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Video Area */
+        .modal-video-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            position: relative;
+        }
+
+        .modal-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            max-height: 70vh;
+        }
+
+        /* Video Info (Right side on TikTok, but here below for mobile) */
+        .modal-info {
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, #000 100%);
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .modal-user-pic {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #ff0050;
+        }
+
+        .modal-user-name {
+            color: white;
+            font-weight: bold;
+        }
+
+        .modal-user-handle {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .modal-caption {
+            color: #ddd;
+            font-size: 14px;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+
+        .modal-music {
+            color: #888;
+            font-size: 12px;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Action Buttons (Like, Comment, Share, Favorite) */
+        .modal-actions {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-item:hover {
+            transform: scale(1.1);
+        }
+
+        .action-icon {
+            font-size: 28px;
+            color: white;
+        }
+
+        .action-count {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .action-item.liked .action-icon {
+            color: #ff0050;
+        }
+
+        .action-item.favorited .action-icon {
+            color: #ffd700;
+        }
+
+        /* Comments Section */
+        .modal-comments {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .modal-comment {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .modal-comment-user {
+            color: #ff0050;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .modal-comment-text {
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .add-comment-modal {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .add-comment-modal input {
+            flex: 1;
+            background: #1a1a1a;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30px;
+            color: white;
+            outline: none;
+        }
+
+        .add-comment-modal button {
+            background: #ff0050;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff0050;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            z-index: 10001;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-gradient"></div>
+<div class="particles" id="particles"></div>
+
+<div class="tiktok-card">
+    <div class="profile-header">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Kevin_Mitnick.jpg/800px-Kevin_Mitnick.jpg" class="profile-pic" onerror="this.src='https://picsum.photos/id/0/100/100'">
+        <div class="stats">
+            <div class="stat-item"><div class="stat-number" id="followersCount">1.2M</div><div class="stat-label">Followers</div></div>
+            <div class="stat-item"><div class="stat-number" id="likesCount">28.5M</div><div class="stat-label">Likes</div></div>
+            <div class="stat-item"><div class="stat-number">47</div><div class="stat-label">Following</div></div>
+        </div>
+    </div>
+
+    <div class="bio-section">
+        <div class="username">@<span>KevinMitnick</span> <span style="color:#ff0050">Legendary Hacker</span></div>
+        <div class="bio">🖥️ Former FBI Most Wanted | Author of "The Art of Deception"<br>🔓 I hacked the system so you don't have to</div>
+        <div class="action-buttons">
+            <button class="btn-follow" id="followBtn">+ Follow</button>
+            <button class="btn-message" id="messageBtn">💬 Message</button>
+        </div>
+    </div>
+
+    <div class="videos-section">
+        <div class="section-title">📱 Latest Videos</div>
+        <div class="video-grid" id="videoGrid"></div>
+    </div>
+
+    <footer>Kevin Mitnick (1963-2023) · Student Project</footer>
+</div>
+
+<!-- TikTok Style Video Modal -->
+<div class="video-modal" id="videoModal">
+    <div class="modal-container">
+        <button class="modal-close" id="modalCloseBtn">✕</button>
+        
+        <div class="modal-video-container">
+            <video class="modal-video" id="modalVideo" controls autoplay loop></video>
+        </div>
+        
+        <div class="modal-info">
+            <div class="modal-user">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Kevin_Mitnick.jpg/800px-Kevin_Mitnick.jpg" class="modal-user-pic">
+                <div>
+                    <div class="modal-user-name">Kevin Mitnick</div>
+                    <div class="modal-user-handle">@KevinMitnick · 5d ago</div>
+                </div>
+            </div>
+            
+            <div class="modal-caption" id="modalCaption">How I hacked the FBI at 17 🔥</div>
+            <div class="modal-music">🎵 Original Sound - Kevin Mitnick</div>
+            
+            <div class="modal-actions">
+                <div class="action-item" id="modalLikeBtn">
+                    <div class="action-icon">❤️</div>
+                    <div class="action-count" id="modalLikeCount">2.3M</div>
+                </div>
+                <div class="action-item" id="modalCommentBtn">
+                    <div class="action-icon">💬</div>
+                    <div class="action-count" id="modalCommentCount">12.4K</div>
+                </div>
+                <div class="action-item" id="modalShareBtn">
+                    <div class="action-icon">📤</div>
+                    <div class="action-count">Share</div>
+                </div>
+                <div class="action-item" id="modalFavoriteBtn">
+                    <div class="action-icon">⭐</div>
+                    <div class="action-count">Save</div>
+                </div>
+            </div>
+            
+            <div class="modal-comments" id="modalComments">
+                <!-- Comments will appear here -->
+            </div>
+            
+            <div class="add-comment-modal">
+                <input type="text" id="modalCommentInput" placeholder="Add comment...">
+                <button id="modalPostCommentBtn">Post</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    // Create Particles
+    for (let i = 0; i < 50; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.width = (Math.random() * 4 + 2) + 'px';
+        p.style.height = p.style.width;
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (Math.random() * 8 + 5) + 's';
+        p.style.animationDelay = (Math.random() * 10) + 's';
+        document.getElementById('particles').appendChild(p);
+    }
+
+    // Video Data
+    const videos = [
+        { id: 1, title: "How I hacked the FBI at 17 🔥", likes: 2300000, comments: 12400, shares: 45000, file: "video1.mp4" },
+        { id: 2, title: "Social engineering 101 - Hacking humans", likes: 1800000, comments: 9200, shares: 32000, file: "video2.mp4" },
+        { id: 3, title: "5 years in prison: my story", likes: 3100000, comments: 18000, shares: 67000, file: "video3.mp4" },
+        { id: 4, title: "Keynote: Future of cybersecurity", likes: 987000, comments: 5100, shares: 21000, file: "video4.mp4" },
+        { id: 5, title: "The Art of Deception - my book", likes: 1200000, comments: 7800, shares: 28000, file: "video5.mp4" },
+        { id: 6, title: "Top 5 passwords to avoid", likes: 2500000, comments: 15000, shares: 52000, file: "video6.mp4" }
+    ];
+
+    let currentVideo = null;
+    let videoLikeStates = {};
+    let videoFavoriteStates = {};
+    let modalCommentList = [];
+
+    function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // Load video grid
+    function loadVideoGrid() {
+        const grid = document.getElementById('videoGrid');
+        grid.innerHTML = '';
+        videos.forEach(video => {
+            if (videoLikeStates[video.id] === undefined) {
+                videoLikeStates[video.id] = { liked: false, likes: video.likes };
+            }
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.setAttribute('data-id', video.id);
+            card.innerHTML = `
+                <div class="video-thumb">
+                    🎬
+                    <div class="play-icon-small">▶️</div>
+                </div>
+                <div class="video-title">${video.title}</div>
+                <div class="video-stats">
+                    <span>❤️ ${formatNumber(videoLikeStates[video.id].likes)}</span>
+                    <span>💬 ${formatNumber(video.comments)}</span>
+                </div>
+            `;
+            card.addEventListener('click', () => openVideoModal(video.id));
+            grid.appendChild(card);
+        });
+    }
+
+    // Open modal with video
+    function openVideoModal(videoId) {
+        const video = videos.find(v => v.id === videoId);
+        if (!video) return;
+        
+        currentVideo = video;
+        
+        // Set video source
+        const modalVideo = document.getElementById('modalVideo');
+        modalVideo.src = `videos/${video.file}`;
+        
+        // Set caption
+        document.getElementById('modalCaption').textContent = video.title;
+        
+        // Set like state
+        const likeState = videoLikeStates[video.id] || { liked: false, likes: video.likes };
+        const likeBtn = document.getElementById('modalLikeBtn');
+        const likeCountSpan = document.getElementById('modalLikeCount');
+        likeCountSpan.textContent = formatNumber(likeState.likes);
+        if (likeState.liked) {
+            likeBtn.classList.add('liked');
+        } else {
+            likeBtn.classList.remove('liked');
+        }
+        
+        // Set favorite state
+        const favState = videoFavoriteStates[video.id] || false;
+        const favBtn = document.getElementById('modalFavoriteBtn');
+        if (favState) {
+            favBtn.classList.add('favorited');
+        } else {
+            favBtn.classList.remove('favorited');
+        }
+        
+        // Set comment count
+        document.getElementById('modalCommentCount').textContent = formatNumber(video.comments);
+        
+        // Load comments for this video (default comments)
+        if (!modalCommentList[video.id]) {
+            modalCommentList[video.id] = [
+                { user: "@elonmusk", text: "Legend! Best hacker ever! 🔥" },
+                { user: "@therock", text: "Mad respect bro! 🫡" },
+                { user: "@mrrobot", text: "Social engineering king!" }
+            ];
+        }
+        renderModalComments(video.id);
+        
+        // Show modal
+        document.getElementById('videoModal').classList.add('active');
+        
+        // Play video
+        modalVideo.play().catch(e => console.log('Autoplay blocked'));
+    }
+    
+    function renderModalComments(videoId) {
+        const container = document.getElementById('modalComments');
+        const comments = modalCommentList[videoId] || [];
+        container.innerHTML = '';
+        comments.forEach(comment => {
+            const div = document.createElement('div');
+            div.className = 'modal-comment';
+            div.innerHTML = `<div><span class="modal-comment-user">${comment.user}</span><span class="modal-comment-text"> ${comment.text}</span></div>`;
+            container.appendChild(div);
+        });
+    }
+    
+    // Modal Like
+    document.getElementById('modalLikeBtn').addEventListener('click', () => {
+        if (!currentVideo) return;
+        const state = videoLikeStates[currentVideo.id];
+        if (!state.liked) {
+            state.liked = true;
+            state.likes++;
+            document.getElementById('modalLikeBtn').classList.add('liked');
+            showToast('❤️ You liked this video');
+        } else {
+            state.liked = false;
+            state.likes--;
+            document.getElementById('modalLikeBtn').classList.remove('liked');
+            showToast('💔 You removed your like');
+        }
+        document.getElementById('modalLikeCount').textContent = formatNumber(state.likes);
+        
+        // Update grid
+        const gridCards = document.querySelectorAll('.video-card');
+        gridCards.forEach(card => {
+            if (parseInt(card.getAttribute('data-id')) === currentVideo.id) {
+                const statsSpan = card.querySelector('.video-stats span:first-child');
+                if (statsSpan) statsSpan.innerHTML = `❤️ ${formatNumber(state.likes)}`;
+            }
+        });
+    });
+    
+    // Modal Favorite
+    document.getElementById('modalFavoriteBtn').addEventListener('click', () => {
+        if (!currentVideo) return;
+        const favState = videoFavoriteStates[currentVideo.id] || false;
+        if (!favState) {
+            videoFavoriteStates[currentVideo.id] = true;
+            document.getElementById('modalFavoriteBtn').classList.add('favorited');
+            showToast('⭐ Saved to favorites');
+        } else {
+            videoFavoriteStates[currentVideo.id] = false;
+            document.getElementById('modalFavoriteBtn').classList.remove('favorited');
+            showToast('⭐ Removed from favorites');
+        }
+    });
+    
+    // Modal Share
+    document.getElementById('modalShareBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(window.location.href);
+        showToast('📤 Link copied to clipboard!');
+    });
+    
+    // Modal Comment Button (scroll to comments)
+    document.getElementById('modalCommentBtn').addEventListener('click', () => {
+        document.querySelector('.modal-comments').scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // Post comment
+    document.getElementById('modalPostCommentBtn').addEventListener('click', () => {
+        if (!currentVideo) return;
+        const input = document.getElementById('modalCommentInput');
+        const text = input.value.trim();
+        if (!text) {
+            showToast('Write a comment first!');
+            return;
+        }
+        if (!modalCommentList[currentVideo.id]) modalCommentList[currentVideo.id] = [];
+        modalCommentList[currentVideo.id].unshift({ user: "@you", text: text });
+        renderModalComments(currentVideo.id);
+        input.value = '';
+        showToast('💬 Comment posted!');
+        
+        // Update comment count
+        const newCount = (currentVideo.comments || 0) + 1;
+        currentVideo.comments = newCount;
+        document.getElementById('modalCommentCount').textContent = formatNumber(newCount);
+    });
+    
+    // Enter to post comment
+    document.getElementById('modalCommentInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('modalPostCommentBtn').click();
+    });
+    
+    // Close modal
+    document.getElementById('modalCloseBtn').addEventListener('click', () => {
+        document.getElementById('videoModal').classList.remove('active');
+        const modalVideo = document.getElementById('modalVideo');
+        modalVideo.pause();
+        modalVideo.src = '';
+    });
+    
+    // Close modal on background click
+    document.getElementById('videoModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('videoModal')) {
+            document.getElementById('videoModal').classList.remove('active');
+            document.getElementById('modalVideo').pause();
+        }
+    });
+    
+    // Follow button
+    let followers = 1200000;
+    let isFollowing = false;
+    document.getElementById('followBtn').addEventListener('click', () => {
+        if (!isFollowing) {
+            isFollowing = true;
+            followers++;
+            document.getElementById('followBtn').textContent = '✓ Following';
+            showToast('✅ Following Kevin Mitnick');
+        } else {
+            isFollowing = false;
+            followers--;
+            document.getElementById('followBtn').textContent = '+ Follow';
+            showToast('❌ Unfollowed');
+        }
+        document.getElementById('followersCount').textContent = formatNumber(followers);
+    });
+    
+    // Message button
+    document.getElementById('messageBtn').addEventListener('click', () => {
+        showToast('💬 Message feature - Kevin will reply soon!');
+    });
+    
+    // Initialize
+    loadVideoGrid();
+</script>
+</body>
+</html>
